@@ -15,9 +15,9 @@ export const Dashboard = () => {
 
   // Static Data
 
-  const { user } = useBlog()
+  const { user, initialized } = useBlog()
   // const connected = true
-  const initialized = false
+  //const initialized = false
   const posts = []
 
   const createPost = () => {}

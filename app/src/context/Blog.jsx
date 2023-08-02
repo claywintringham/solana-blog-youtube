@@ -71,5 +71,9 @@ export const BlogProvider = ({ children }) => {
     start()
   }, [])
 
-  return <BlogContext.Provider value={{}}>{children}</BlogContext.Provider>
+  return (
+    <BlogContext.Provider value={{ user, initialized }}>
+      {children}
+    </BlogContext.Provider>
+  )
 }
