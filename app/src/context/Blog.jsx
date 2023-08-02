@@ -29,6 +29,7 @@ export const useBlog = () => {
 export const BlogProvider = ({ children }) => {
   const [user, setUser] = useState()
   const [initialized, setInitialized] = useState(false)
+  const [transactionPending, setTransactionPending] = useState(false)
 
   const anchorWallet = useAnchorWallet()
   const { connection } = useConnection()
@@ -50,6 +51,7 @@ export const BlogProvider = ({ children }) => {
       if (program && publicKey) {
         try {
           //Check if there is a user account
+          setTransactionPending(true)
           const [userPda] = await findProgramAddressSync(
             [utf8.encode('user'), publicKey.toBuffer()],
             program.programId
@@ -61,6 +63,8 @@ export const BlogProvider = ({ children }) => {
         } catch (err) {
           console.log('No User')
           setInitialized(false) //Initialize user
+        } finally {
+          setTransactionPending(false)
         }
       }
       console.log('Starting app and fetching data')
@@ -69,10 +73,37 @@ export const BlogProvider = ({ children }) => {
       //If no user, set state to false (need a button to init user)
     }
     start()
-  }, [])
+  }, [program, publicKey, transactionPending])
+
+  const initUser = async () => {
+    if (program && publicKey) {
+      try {
+        setTransactionPending(true)
+        const name = getRandomName()
+        const avatar = getAvatarUrl(name)
+        const [userPda] = await findProgramAddressSync(
+          [utf8.encode('user'), publicKey.toBuffer()],
+          program.programId
+        )
+        await program.methods
+          .initUser(name, avatar)
+          .accounts({
+            userAccount: userPda,
+            authority: publicKey,
+            systemProgram: SystemProgram.programId,
+          })
+          .rpc()
+        setInitialized(true)
+      } catch (err) {
+        console.log(err)
+      } finally {
+        setTransactionPending(false)
+      }
+    }
+  }
 
   return (
-    <BlogContext.Provider value={{ user, initialized }}>
+    <BlogContext.Provider value={{ user, initialized, initUser }}>
       {children}
     </BlogContext.Provider>
   )
