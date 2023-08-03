@@ -32,6 +32,7 @@ export const BlogProvider = ({ children }) => {
   const [transactionPending, setTransactionPending] = useState(false)
   const [showModal, setShowModal] = useState(false)
   const [lastPostId, setLastPostId] = useState(0)
+  const [posts, setPosts] = useState([])
 
   const anchorWallet = useAnchorWallet()
   const { connection } = useConnection()
@@ -53,7 +54,6 @@ export const BlogProvider = ({ children }) => {
       if (program && publicKey) {
         try {
           //Check if there is a user account
-          setTransactionPending(true)
           const [userPda] = await findProgramAddressSync(
             [utf8.encode('user'), publicKey.toBuffer()],
             program.programId
@@ -62,7 +62,13 @@ export const BlogProvider = ({ children }) => {
           if (user) {
             setInitialized(true) // Create Post
             setUser(user)
-            setLastPostId(user.LastPostId)
+            setLastPostId(user.lastPostId)
+            //console.log(program.account.postAccount)
+            const postAccounts = await program.account.postAccount.all(
+              publicKey.toString()
+            )
+            setPosts(postAccounts)
+            console.log(postAccounts)
           }
         } catch (err) {
           console.log('No User')
@@ -148,6 +154,7 @@ export const BlogProvider = ({ children }) => {
         showModal,
         setShowModal,
         createPost,
+        posts,
       }}
     >
       {children}

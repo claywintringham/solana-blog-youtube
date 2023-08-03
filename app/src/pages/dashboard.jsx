@@ -13,13 +13,17 @@ export const Dashboard = () => {
   const [postTitle, setPostTitle] = useState('')
   const [postContent, setPostContent] = useState('')
 
-  // Static Data
-
-  const { user, initialized, initUser, showModal, setShowModal, createPost } =
-    useBlog()
+  const {
+    user,
+    initialized,
+    initUser,
+    showModal,
+    setShowModal,
+    createPost,
+    posts,
+  } = useBlog()
   // const connected = true
   //const initialized = false
-  const posts = []
 
   //const createPost = () => {}
 
