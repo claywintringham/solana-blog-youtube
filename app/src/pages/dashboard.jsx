@@ -15,12 +15,13 @@ export const Dashboard = () => {
 
   // Static Data
 
-  const { user, initialized, initUser, showModal, setShowModal } = useBlog()
+  const { user, initialized, initUser, showModal, setShowModal, createPost } =
+    useBlog()
   // const connected = true
   //const initialized = false
   const posts = []
 
-  const createPost = () => {}
+  //const createPost = () => {}
 
   /////////////////
 

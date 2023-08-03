@@ -31,6 +31,7 @@ export const BlogProvider = ({ children }) => {
   const [initialized, setInitialized] = useState(false)
   const [transactionPending, setTransactionPending] = useState(false)
   const [showModal, setShowModal] = useState(false)
+  const [lastPostId, setLastPostId] = useState(0)
 
   const anchorWallet = useAnchorWallet()
   const { connection } = useConnection()
@@ -60,6 +61,8 @@ export const BlogProvider = ({ children }) => {
           const user = await program.account.userAccount.fetch(userPda)
           if (user) {
             setInitialized(true) // Create Post
+            setUser(user)
+            setLastPostId(user.LastPostId)
           }
         } catch (err) {
           console.log('No User')
@@ -101,9 +104,51 @@ export const BlogProvider = ({ children }) => {
     }
   }
 
+  const createPost = async (title, content) => {
+    if (program && publicKey) {
+      setTransactionPending(true)
+      try {
+        const [userPda] = findProgramAddressSync(
+          [utf8.encode('user'), publicKey.toBuffer()],
+          program.programId
+        )
+        const [postPda] = findProgramAddressSync(
+          [
+            utf8.encode('post'),
+            publicKey.toBuffer(),
+            Uint8Array.from([lastPostId]),
+          ],
+          program.programId
+        )
+        await program.methods
+          .createPost(title, content)
+          .accounts({
+            postAccount: postPda,
+            userAccount: userPda,
+            authority: publicKey,
+            systemProgram: SystemProgram.programId,
+          })
+          .rpc()
+
+        setShowModal(false)
+      } catch (err) {
+        console.log(err)
+      } finally {
+        setTransactionPending(false)
+      }
+    }
+  }
+
   return (
     <BlogContext.Provider
-      value={{ user, initialized, initUser, showModal, setShowModal }}
+      value={{
+        user,
+        initialized,
+        initUser,
+        showModal,
+        setShowModal,
+        createPost,
+      }}
     >
       {children}
     </BlogContext.Provider>
