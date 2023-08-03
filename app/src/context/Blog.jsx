@@ -30,6 +30,7 @@ export const BlogProvider = ({ children }) => {
   const [user, setUser] = useState()
   const [initialized, setInitialized] = useState(false)
   const [transactionPending, setTransactionPending] = useState(false)
+  const [showModal, setShowModal] = useState(false)
 
   const anchorWallet = useAnchorWallet()
   const { connection } = useConnection()
@@ -63,8 +64,6 @@ export const BlogProvider = ({ children }) => {
         } catch (err) {
           console.log('No User')
           setInitialized(false) //Initialize user
-        } finally {
-          setTransactionPending(false)
         }
       }
       console.log('Starting app and fetching data')
@@ -103,7 +102,9 @@ export const BlogProvider = ({ children }) => {
   }
 
   return (
-    <BlogContext.Provider value={{ user, initialized, initUser }}>
+    <BlogContext.Provider
+      value={{ user, initialized, initUser, showModal, setShowModal }}
+    >
       {children}
     </BlogContext.Provider>
   )

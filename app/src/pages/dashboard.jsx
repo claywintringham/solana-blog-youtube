@@ -15,15 +15,13 @@ export const Dashboard = () => {
 
   // Static Data
 
-  const { user, initialized, initUser } = useBlog()
+  const { user, initialized, initUser, showModal, setShowModal } = useBlog()
   // const connected = true
   //const initialized = false
   const posts = []
 
   const createPost = () => {}
 
-  const showModal = false
-  const setShowModal = () => {}
   /////////////////
 
   const onConnect = () => {
